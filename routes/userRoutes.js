@@ -1,23 +1,15 @@
 const express = require('express');
+const { createUser, loginUser, getUsersRBR } = require('../controllers/userContorller');  // Corrigez le nom ici
+
 const router = express.Router();
-const userController = require('../controllers/userController');
 
-// Création d'un Mofawadhiya
-router.post('/create', userController.createMofawadhiya);
+// Route pour créer un utilisateur
+router.post('/add', createUser);
 
-// Connexion d'un utilisateur (si tu veux l'ajouter plus tard)
-// router.post('/login', userController.login);
+// Route pour connecter un utilisateur
+router.post('/login', loginUser);
 
-// Récupérer tous les Mofawadhiya
-router.get('/', userController.getAllMofawadhiya);
-
-// Récupérer un Mofawadhiya par ID
-router.get('/:id', userController.getMofawadhiyaById);
-
-// Mettre à jour un Mofawadhiya
-router.put('/:id', userController.updateMofawadhiya);
-
-// Supprimer un Mofawadhiya
-router.delete('/:id', userController.deleteMofawadhiya);
+// Route pour récupérer les utilisateurs du modèle UserRBR
+router.get('/rbr', getUsersRBR);
 
 module.exports = router;
