@@ -1,15 +1,15 @@
-// controllers/userController.js
 const UserBase = require('../models/UserBase Model');
 const UserRBR = require('../models/users/userrbrModel');
 const UserLeader = require('../models/users/userLeaderModel');
 const UserMembre = require('../models/users/userMembreModel');
+const UserAdmin = require('../models/users/userAdmin');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 // Fonction pour créer un utilisateur
 const createUser = async (req, res) => {
   try {
-    const { idscout, nom, prenom, numtel, adresseemail, region, role, mot_de_passe } = req.body;
+    const { idscout, nom, prenom, numtel, adresseemail, region, role, mot_de_passe , groupe } = req.body;
 
     // Vérification des champs obligatoires
     if (!idscout || !nom || !prenom || !numtel || !adresseemail || !region || !role || !mot_de_passe) {
@@ -37,11 +37,15 @@ const createUser = async (req, res) => {
       adresseemail,
       region,
       role,
+      groupe,
       mot_de_passe: hashedPassword,
     };
 
     let user;
     switch (role) {
+      case 'admin':
+        user = new Useradmin(userData);
+        break;
       case 'rbr':
         user = new UserRBR(userData);
         break;
@@ -79,38 +83,14 @@ const getUsersRBR = async (req, res) => {
   }
 };
 
-// Fonction pour l'authentification de l'utilisateur (login)
-const loginUser = async (req, res) => {
+const getUsersLeader = async (req, res) => {
   try {
-    const { adresseemail, mot_de_passe } = req.body;
-
-    if (!adresseemail || !mot_de_passe) {
-      return res.status(400).json({ message: 'Email et mot de passe requis.' });
-    }
-
-    // Rechercher l'utilisateur dans les différents rôles
-    let user = await UserRBR.findOne({ adresseemail }) ||
-               await UserLeader.findOne({ adresseemail }) ||
-               await UserMembre.findOne({ adresseemail });
-
-    if (!user) {
-      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
-    }
-
-    // Vérifier le mot de passe
-    const isMatch = await bcrypt.compare(mot_de_passe, user.mot_de_passe);
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Mot de passe incorrect.' });
-    }
-
-    // Générer un token JWT
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-    res.status(200).json({ message: "Connexion réussie.", token, user });
+    const users = await UserLeader.find(); // Trouver tous les utilisateurs dans UserRBR
+    res.status(200).json({ data: users });
   } catch (error) {
     console.error("Erreur serveur :", error.message);
-    res.status(500).json({ message: 'Erreur lors de la connexion.' });
+    res.status(500).json({ message: "Erreur serveur." });
   }
 };
 
-module.exports = { createUser, getUsersRBR, loginUser };
+module.exports = { createUser, getUsersRBR , getUsersLeader };
