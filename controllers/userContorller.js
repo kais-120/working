@@ -92,5 +92,14 @@ const getUsersLeader = async (req, res) => {
     res.status(500).json({ message: "Erreur serveur." });
   }
 };
+const getUsersMembre = async (req, res) => {
+  try {
+    const users = await UserMembre.find(); // Trouver tous les utilisateurs dans UserRBR
+    res.status(200).json({ data: users });
+  } catch (error) {
+    console.error("Erreur serveur :", error.message);
+    res.status(500).json({ message: "Erreur serveur." });
+  }
+};
 
-module.exports = { createUser, getUsersRBR , getUsersLeader };
+module.exports = { createUser, getUsersRBR , getUsersLeader , getUsersMembre };

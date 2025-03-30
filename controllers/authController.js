@@ -7,7 +7,8 @@ const login = async (req, res) => {
   const { idscout, password } = req.body;
 
   try {
-    // Trouver l'utilisateur par l'idscout (qui représente ici l'email ou un autre identifiant unique)
+    console.log("Données reçues:", req.body); // Log pour débogage
+
     const user = await User.findOne({ idscout });
 
     if (!user) {
@@ -23,7 +24,7 @@ const login = async (req, res) => {
 
     // Générer un token JWT
     const token = jwt.sign(
-      { id: user._id, idscout: user.idscout, nom: user.nom , prenom:user.prenom , reol: user.role }, // Inclure l'id et l'idscout dans le payload du token
+      { id: user._id, idscout: user.idscout, nom: user.nom , prenom:user.prenom , role: user.role }, // Inclure l'id et l'idscout dans le payload du token
       process.env.JWT_SECRET || "votre_clé_secrète", // Clé secrète (à mettre dans un fichier .env pour la sécurité)
       { expiresIn: "12h" } // Expiration du token
     );
@@ -36,7 +37,9 @@ const login = async (req, res) => {
         idscout: user.idscout,
         nom: user.nom, // Inclure les autres données de l'utilisateur si nécessaire
         prenom: user.prenom,
-        role: user.role, 
+        role: user.role,
+        region: user.region, 
+        groupe: user.groupe
       },
       token,
     });

@@ -1,5 +1,5 @@
 const express = require('express');
-const { createUser, loginUser, getUsersRBR, getUsersLeader } = require('../controllers/userContorller');  // Corrigez le nom ici
+const { createUser, loginUser, getUsersRBR, getUsersLeader, getUsersMembre } = require('../controllers/userContorller');  // Corrigez le nom ici
 
 const router = express.Router();
 
@@ -10,5 +10,7 @@ router.post('/add', createUser);
 router.get('/rbr', getUsersRBR);
 
 router.get('/leader', getUsersLeader);
+
+router.get('/membre', getUsersMembre);
 
 module.exports = router;
