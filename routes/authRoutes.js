@@ -1,9 +1,25 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { login } = require('../controllers/authController'); // Assurez-vous que authController existe et contient la logique du login
+const {
+  register,
+  login,
+  profile,
+  updateProfile,
+  deleteUser,
+  updatePassword,
+  updateEmail,
+} = require("../controllers/authController");
 
-// Route pour la connexion (login)
-router.post('/login', login); // Utilise la fonction login du contrôleur d'authentification
+const AuthenticateToken = require("../middleware/AuthenticateToken");
+
+router.post("/register",register);
+router.post("/login", login);
+router.get("/profile", AuthenticateToken,profile);
+router.put("/update/information",AuthenticateToken, updateProfile);
+router.put("/update/email",AuthenticateToken, updateEmail);
+router.put("/update/password",AuthenticateToken, updatePassword);
+
+
 
 
 module.exports = router;
