@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "app.cjs",
+  "main": "app.js",
   "scripts": {
     "server": "nodemon app.js",
     "start": "node server.js"
