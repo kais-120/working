@@ -20,8 +20,8 @@ exports.CreatePayment = [
                 receiverWalletId:process.env.KONNECT_WALLET_ID,
                 amount,
                 acceptedPaymentMethods: ["bank_card", "e-DINAR","konnect"],
-                successUrl:"http://localhost:8080/payment/success",
-                failUrl:"http://localhost:8080/payment/fail",
+                successUrl:"https://working-frontend-cyan.vercel.app/payment/success",
+                failUrl:"https://working-frontend-cyan.vercel.app/payment/fail",
             },
             { 
                 headers:{
