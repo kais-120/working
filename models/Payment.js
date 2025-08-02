@@ -13,7 +13,7 @@ const Payment = sequelize.define("Payment",{
             model:"booking",
             key:"id"
         },
-        onDelete:"cascade"
+        onDelete:"SET NULL"
     },
     references:{
         type:DataTypes.STRING(100),

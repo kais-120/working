@@ -3,20 +3,8 @@ const CustomMembership = require("./CustomMembership");
 const MembershipEquipments = require("./MembershipEquipments");
 const Payment = require("./Payment");
 const Review = require("./Review");
-const Space = require("./Space")
-const SpaceImage = require("./SpaceImage");
 const Users = require("./Users");
 
-Space.hasMany(SpaceImage,{
-    foreignKey:"space_id",
-    as:"space",
-    onDelete:"cascade"
-});
-SpaceImage.belongsTo(Space,{
-    foreignKey:"space_id",
-    as:"SpaceImage",
-    onDelete:"cascade"
-});
 Users.hasMany(Booking,{
     foreignKey:"user_id",
     as:"booking",
@@ -30,12 +18,12 @@ Booking.belongsTo(Users,{
 Booking.hasMany(Payment,{
     foreignKey:"booking_id",
     as:"paymentBooking",
-    onDelete:"cascade"
+    onDelete:"SET NULL"
 });
 Payment.belongsTo(Booking,{
     foreignKey:"booking_id",
     as:"bookingPayment",
-    onDelete:"cascade"
+    onDelete:"SET NULL"
 });
 Users.hasMany(Review,{
     foreignKey:"user_id",
@@ -68,4 +56,4 @@ MembershipEquipments.belongsTo(CustomMembership,{
     onDelete:"cascade"
 })
 
-module.exports = {Space,SpaceImage,Booking,Users,Payment,Review,CustomMembership,MembershipEquipments}
+module.exports = {Booking,Users,Payment,Review,CustomMembership,MembershipEquipments}

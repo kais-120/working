@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "server": "nodemon app.js",
-    "start": "node app.js"
+    "start": "node app.js",
+    "admin": "node bin/createAdmin.js"
   },
   "keywords": [],
   "author": "",

@@ -85,8 +85,9 @@ const totalBookings = await Booking.count({where :{payment_access:"accept"}});
     order: [[literal('month'), 'DESC']],
     raw: true
 });
-const paymentGrowth = paymentByMonth.length > 1 ? (paymentByMonth[0].sum - paymentByMonth[1].sum) * 100 : null
-
+const paymentGrowth = paymentByMonth.length > 1
+  ? (((paymentByMonth[0].sum - paymentByMonth[1].sum) / paymentByMonth[1].sum) * 100).toFixed(2)
+  : null;
     res.send({bookingCounts,revenue,paymentGrowth})
 }
 exports.calculateRevenue = async (req,res) => {
@@ -98,7 +99,7 @@ exports.calculateRevenue = async (req,res) => {
   const startOfLastWeek = new Date(now);
   startOfLastWeek.setDate(now.getDate() - 14);
 
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+const startOfMonth = new Date(Date.UTC(now.getFullYear(), now.getMonth(), 1));
   const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
 
   const startOfQuarter = new Date(now.getFullYear(), now.getMonth() - 2, 1);
@@ -111,7 +112,6 @@ exports.calculateRevenue = async (req,res) => {
       payment_date: { [Op.gte]: startOfWeek },
     },
   });
-
   const lastWeekRevenue = await Payment.sum("amount", {
     where: {
       status: "accept",
@@ -126,18 +126,21 @@ exports.calculateRevenue = async (req,res) => {
   const currentMonthRevenue = await Payment.sum("amount", {
     where: {
       status: "accept",
-      payment_date: { [Op.gte]: startOfMonth },
+      payment_date: {
+        [Op.gte]: startOfMonth
+      },
     },
   });
 
   const lastMonthRevenue = await Payment.sum("amount", {
+    where:{
     status: "accept",
     payment_date: {
       [Op.gte]: startOfLastMonth,
       [Op.lt]: startOfMonth,
     },
+  }
   });
-
   // QUARTER
   const currentQuarterRevenue = await Payment.sum("amount", {
     where: {

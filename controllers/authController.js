@@ -32,12 +32,13 @@ exports.register = [
 exports.login = [
    body("email").notEmpty().withMessage("email is required"),
   body("password").notEmpty().withMessage("name is required"),
+  body("remember").notEmpty().withMessage("remember is required"),
   async (req, res) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()){
       return res.status(422).json({ errors: errors.array().map(err => err.msg) });
     }
-  const { email, password } = req.body;
+  const { email, password,remember } = req.body;
   try {
     const user = await User.findOne({where: {email} });
     if (!user) return res.status(400).json({ msg: "Invalid credentials" });
@@ -45,7 +46,7 @@ exports.login = [
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
 
-    const token = jwt.sign({ id: user.id } , process.env.JWT_SECRET);
+    const token = jwt.sign({ sub: user.id,iss:"wwww.djerbacoworking.com",aud:"Djerba Coworking" }, process.env.JWT_SECRET ,{expiresIn: !remember ? "24h" : "7d"});
     res.send({ token });
   } catch (err) {
     res.status(500).json({ msg: err.message });
@@ -154,13 +155,3 @@ exports.updatePassword = [
   }
 }
 ];
-// exports.deleteUser = [ authenticateAdmin, async (req, res) => {
-//   try {
-//     const user = await User.findByIdAndDelete(req.params.id);
-//     if (!user) return res.status(404).json({ msg: "Espace non trouvé" });
-//     res.json({ msg: "Espace supprimé" });
-//   } catch (err) {
-//     res.status(500).json({ msg: err.message });
-//   }
-// }
-// ];

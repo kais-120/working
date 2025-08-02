@@ -184,7 +184,6 @@ exports.UpdateBookingStatus =
 exports.getBookingByUser = async (req,res) =>{
   const user_id = req.userId;
   const {page} = req.params;
-  const date = new Date()
   try{
     const offset = (page - 1) * 7;
     const bookings = await Booking.findAndCountAll({
@@ -192,10 +191,20 @@ exports.getBookingByUser = async (req,res) =>{
         {
           model:Payment,
           as:"paymentBooking",
-          attributes:["references"]
+          attributes:["references","payment_date"],
+          where:{
+            status:"accept"
+          },
+          required: false
+        },
+        {
+          model:Users,
+          as:"users",
+          attributes:["name","last_name","email","phone"]
         }
       ],
       limit:7,
+      order:[["createdAt","DESC"]],
       offset,
       where: {
         user_id

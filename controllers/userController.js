@@ -11,6 +11,7 @@ exports.users =
     try {
       const users = await Users.findAndCountAll({
         limit:7,
+        order:[["createdAt","DESC"]],
         offset:offset,
         attributes:{
           exclude:"password"
@@ -85,6 +86,7 @@ exports.searchUser = async (req, res) => {
         exclude:'password'
       },
       limit:7,
+       order:[["createdAt","DESC"]],
       offset,
      where: {
       [Op.and]: [

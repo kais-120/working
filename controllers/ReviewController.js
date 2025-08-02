@@ -1,5 +1,4 @@
 const { body, validationResult } = require("express-validator");
-const CoworkingSpace = require("../models/Space");
 const Review = require("../models/Review");
 const Users = require("../models/Users");
 
@@ -49,7 +48,6 @@ exports.getReview = async (req, res) => {
     }
   },
 
-// Obtenir un espace par ID
 exports.getReviewById = async (req, res) => {
   const { id } = req.params;
   try {
@@ -75,14 +73,26 @@ exports.updateReview = async (req, res) => {
   }
 };
 
-// Supprimer un espace
-exports.deleteSpace = [async (req, res) => {
-  try {
-    const space = await CoworkingSpace.findByIdAndDelete(req.params.id);
-    if (!space) return res.status(404).json({ msg: "Espace non trouvé" });
-    res.json({ msg: "Espace supprimé" });
-  } catch (err) {
-    res.status(500).json({ msg: err.message });
-  }
+exports.getReviewPublic = async (req, res) => {
+    try {
+      const reviews = await Review.findAll({
+        where: {
+          status:"accept"
+        },
+        order:[["updatedAt","DESC"]],
+        limit:5,
+        include:{
+          model:Users,
+          as:"userReviews",
+          attributes:["name"]
+        }
+      });
+      if(!reviews){
+        res.status(404).send({err:"there are not a available review"});
+      }
+      res.send(reviews);
+    } catch (err) {
+      res.status(500).json({ msg: 'server error'});
+      console.log(err)
+    }
 }
-];
