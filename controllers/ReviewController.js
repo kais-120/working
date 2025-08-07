@@ -1,4 +1,5 @@
 const { body, validationResult } = require("express-validator");
+const CoworkingSpace = require("../models/Space");
 const Review = require("../models/Review");
 const Users = require("../models/Users");
 

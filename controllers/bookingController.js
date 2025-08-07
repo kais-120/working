@@ -22,9 +22,8 @@ exports.createBooking = [
     }
     const { membership,date_start,time_start,duration,price } = req.body;
     const user_id = req.userId
-    console.log(membership)
     try {
-      Booking.create({
+      const booking = await Booking.create({
         user_id,
         date_start,
         time_start,
@@ -32,8 +31,8 @@ exports.createBooking = [
         membership,
         price
       });
-
-      
+      const io = req.app.get("io")
+      io.emit("booking",booking)  
       res.send({ msg: "Réservation créée" });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -77,7 +76,6 @@ exports.createBookingCustom = [
       const customMembership = await CustomMembership.create({
         availability,offered:offeredString,access_meeting,invitation,access,offshoreCreation,mailAlert,booking_id:booking.id
       });
-      console.log(customMembership.id)
       for (const item of equipment) {
         await MembershipEquipments.create({
          custom_membership_id:customMembership.id,
@@ -85,7 +83,8 @@ exports.createBookingCustom = [
       });
 
       }
-      
+       const io = req.app.get("io")
+      io.emit("booking",booking)  
       res.send({ msg: "Réservation créée" });
     } catch (err) {
       res.status(500).json({ msg: err.message });
@@ -111,7 +110,7 @@ exports.getAllBookings = async (req, res) => {
       limit:7,
       distinct:true,
       offset,
-      order:[["createdAt","DESC"]],
+      order:[['is_new', 'DESC'],['createdAt', 'DESC']],
       include:
         [{
           model:Users,
@@ -136,8 +135,11 @@ exports.getAllBookings = async (req, res) => {
       ]
       
     });
+    const approveCountBooking = await Booking.findAll({where: {status:"accept"}})
+    const refuseCountBooking = await Booking.findAll({where: {status:"refuse"}})
+    const pendingCountBooking = await Booking.findAll({where: {status:"pending"}})
     const totalPage = Math.ceil(bookings.count / 7)
-    res.json({bookings,totalPage,page});
+    res.json({bookings,totalPage,page,approveCount:approveCountBooking.length,refuseCount:refuseCountBooking.length,pendingCount:pendingCountBooking.length});
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
@@ -173,8 +175,11 @@ exports.UpdateBookingStatus =
     if(membership === "personnalisé"){
       booking.price = price;
     }
+    booking.is_new = false
     booking.save();
-
+    const userId = booking.user_id;
+    const io = req.app.get("io")
+   io.to(userId.toString()).emit("booking-update", { msg: "updated" });
     res.json({ msg: "Réservation est mettre a jour" });
   } catch (err) {
     res.status(500).json({ msg: err.message });
@@ -247,4 +252,16 @@ exports.searchReference = async(req,res)=>{
 })
 const totalPage = Math.ceil(bookings.count / 7)
   res.send({bookings,page,totalPage})
+}
+
+exports.updateNew = async(req,res)=>{
+    try{
+      await Booking.update({is_new:false},{ where: { is_new: true }});
+      return res.send({ message: "all booking are seen" });
+      
+
+    }catch(err){
+      console.log(err)
+      return res.status(500).send({ message: "server error" });
+    }
 }

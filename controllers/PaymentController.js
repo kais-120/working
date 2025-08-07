@@ -20,8 +20,8 @@ exports.CreatePayment = [
                 receiverWalletId:process.env.KONNECT_WALLET_ID,
                 amount,
                 acceptedPaymentMethods: ["bank_card", "e-DINAR","konnect"],
-                successUrl:"https://working-frontend-cyan.vercel.app/payment/success",
-                failUrl:"https://working-frontend-cyan.vercel.app/payment/fail",
+                successUrl:"http://localhost:8080/payment/success",
+                failUrl:"http://localhost:8080/payment/fail",
             },
             { 
                 headers:{
@@ -53,6 +53,7 @@ exports.VerifyPayment = [
         const payment = response.data.payment;
         if(payment.failedTransactions === 1){
             paymentSchema.status = "refuse"
+            paymentSchema.save()
             return res.status(402).send("payment not valid")
         }
         else if(payment.successfulTransactions === 1){
@@ -102,3 +103,30 @@ exports.paymentVerifyAdmin = [
         }
     }
 ]
+exports.sendReturnPayment = async (req,res) => {
+    const { payment_ref } = req.params
+    const payment = await Payment.findOne({where: {references:payment_ref}});
+    const amount = payment.amount;
+    const booking_id = payment.booking_id;
+    try{
+        const response = await axios.post("https://api.sandbox.konnect.network/api/v2/payments/init-payment",{
+                receiverWalletId:process.env.KONNECT_WALLET_ID,
+                amount,
+                acceptedPaymentMethods: ["bank_card", "e-DINAR","konnect"],
+                successUrl:"http://localhost:8080/payment/success",
+                failUrl:"http://localhost:8080/payment/fail",
+            },
+            { 
+                headers:{
+                    "x-api-key":process.env.KONNECT_API_KEY,
+                }
+        }
+    )
+    Payment.create({booking_id,references:response.data.paymentRef,amount})
+    res.send(response.data)
+}   catch(err){
+    console.log(err)
+        return res.status(500).send({message:"error server"})
+
+    }
+}

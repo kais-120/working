@@ -11,7 +11,7 @@ module.exports  = (req, res, next) => {
     req.userId = decoded.sub;
     next();
   } catch (err) {
-    res.status(403).json({ message: "Invalid token" });
+    return res.status(403).json({ message: "Invalid token" });
   }
 };
 

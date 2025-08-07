@@ -45,6 +45,10 @@ const Booking = sequelize.define("Booking",{
       type:DataTypes.INTEGER.UNSIGNED,
       allowNull:true,
     },
+    is_new:{
+      type:DataTypes.BOOLEAN,
+      defaultValue:true
+    },
     payment_access:{
       type:DataTypes.ENUM("pending","accept"),
       allowNull:true
