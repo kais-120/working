@@ -1,5 +1,4 @@
 const { body, validationResult } = require("express-validator");
-const CoworkingSpace = require("../models/Space");
 const Review = require("../models/Review");
 const Users = require("../models/Users");
 
@@ -68,7 +67,7 @@ exports.updateReview = async (req, res) => {
     if (!review) return res.status(404).json({ msg: "review no found" });
     review.status = status;
     review.save()
-    res.json({ msg: "Espace mis à jour" });
+    res.json({ msg: "review mis à jour" });
   } catch (err) {
     res.status(500).json({ msg: err.message });
   }
