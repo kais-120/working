@@ -73,12 +73,6 @@ exports.updateSpace = [
     }
     const image = req.files.image;
     const { isChange } = req.body;
-    console.log(!image && isChange)
-    console.log("image:", image);
-console.log("isChange:", isChange, typeof isChange);
-console.log("Condition:", !image && isChange);
-
-
     if(!image && isChange === "true"){
       return res.status(422).send({message:"image required"});
     }
@@ -91,7 +85,10 @@ console.log("Condition:", !image && isChange);
     space.location = location;
     space.description = description;
     if(isChange === "true"){
-      fs.unlinkSync(`./uploads/${space.image}`)
+      const path = `./uploads/${space.image}`;
+      if (fs.existsSync(path)) {
+        fs.unlinkSync(path);
+      }
     space.image = image[0].filename;
     }
     space.save()
