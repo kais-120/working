@@ -7,6 +7,7 @@ const PaymentRoutes = require("./routes/PaymentRoutes")
 const ReviewRoutes = require("./routes/ReviewRoutes")
 const DashboardRoutes = require("./routes/DashboardRoutes")
 const NewsRoutes = require("./routes/NewsRoutes")
+const SpaceRoutes = require("./routes/SpaceRoutes")
 
 
 router.use("/auth",AuthRoutes);
@@ -16,5 +17,6 @@ router.use("/payment",PaymentRoutes);
 router.use("/review",ReviewRoutes);
 router.use("/dashboard",DashboardRoutes);
 router.use("/news",NewsRoutes);
+router.use("/space",SpaceRoutes);
 module.exports = router;
 

@@ -5,7 +5,6 @@ const {
   login,
   profile,
   updateProfile,
-  deleteUser,
   updatePassword,
   updateEmail,
 } = require("../controllers/authController");

@@ -17,7 +17,7 @@ require("./cron/newsExpire");
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // database
-sequelize.sync();
+sequelize.sync({alter:true});
 
 sequelize.authenticate()
   .then(() => console.log("MySQL Connected"))
