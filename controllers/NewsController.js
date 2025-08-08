@@ -40,8 +40,7 @@ exports.createNews = [
             await News.create({status,category,content,titre,image:image[0].filename,date_start,date_end,date_time});
             return res.status(201).send({message:"new add"})
         }catch(err){
-            console.log(err)
-            return res.status(500).send({message:"server error"})
+            return res.status(500).send(err)
         }
         
     }
